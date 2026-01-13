@@ -1,7 +1,21 @@
 <nav class="fixed w-full z-30 top-0 start-0 border-b border-amber-100 bg-white/70 backdrop-blur-xl supports-[backdrop-filter]:bg-white/60 shadow-sm">
     <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto px-4 py-3">
-        <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
-            <img src="{{ asset('images/desert-rose-logo.png') }}" class="h-12 w-auto object-contain" alt="Desert Rose | زهرة الصحراء logo" />
+        <a href="/" class="flex items-center gap-3 rtl:space-x-reverse group">
+            
+            {{-- Logo Container --}}
+            {{-- الخيار C: خلفية شفافة مع border خفيف --}}
+<div class="h-12 w-12 rounded-xl border border-amber-200/50 overflow-hidden">
+    <img src="{{ asset('images/desert-rose-logo.png') }}" 
+         class="h-full w-full object-cover" 
+         alt="Logo" />
+</div>
+            
+            {{-- Brand Name --}}
+            <div class="hidden sm:block">
+                <span class="text-lg font-bold text-stone-800">Desert Rose</span>
+                <span class="block text-xs text-amber-600 font-arabic -mt-1">زهرة الصحراء</span>
+            </div>
+            
         </a>
         <div class="flex items-center md:order-2 space-x-1 md:space-x-0 rtl:space-x-reverse">
             <button type="button" data-dropdown-toggle="language-dropdown-menu" class="flex items-center text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base text-sm px-3 py-2 focus:outline-none">
