@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker compose exec laravel.test php artisan migrate --env=testing --force)",
+      "Bash(docker compose exec laravel.test php artisan test --env=testing)",
+      "Bash(docker compose exec laravel.test php -r \"echo app\\(\\)->environment\\(\\);\")",
+      "Bash(docker compose exec laravel.test php artisan env)"
+    ]
+  }
+}

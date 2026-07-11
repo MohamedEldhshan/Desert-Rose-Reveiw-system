@@ -11,14 +11,20 @@ return new class extends Migration
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('email');
-            $table->string('phone')->nullable();
-            $table->string('nationality')->nullable();
+            $table->string('email')->nullable();
+            $table->string('phone');
+            $table->string('nationality');
             $table->unsignedTinyInteger('rating');
             $table->text('comment');
             $table->boolean('is_approved')->default(false);
             $table->boolean('is_featured')->default(false);
             $table->timestamps();
+            
+            // Indexes for performance
+            $table->index('is_approved');
+            $table->index('is_featured');
+            $table->index('rating');
+            $table->index('created_at');
         });
     }
 

@@ -2,10 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Review extends Model
 {
+    use HasFactory;
+    
     protected $fillable = [
         'name',
         'email',
@@ -15,6 +18,7 @@ class Review extends Model
         'comment',
         'is_approved',
         'is_featured',
+        'idempotency_key',
     ];
 
     protected $casts = [
@@ -23,15 +27,27 @@ class Review extends Model
         'is_featured' => 'boolean',
     ];
 
-    // Scope للمراجعات المعتمدة
+    // Scope for approved reviews
     public function scopeApproved($query)
     {
         return $query->where('is_approved', true);
     }
 
-    // Scope للمراجعات المميزة
+    // Scope for featured reviews
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    // Scope for pending reviews
+    public function scopePending($query)
+    {
+        return $query->where('is_approved', false);
+    }
+
+    // Check if review exists by idempotency key
+    public static function findByIdempotencyKey(string $key): ?self
+    {
+        return static::where('idempotency_key', $key)->first();
     }
 }

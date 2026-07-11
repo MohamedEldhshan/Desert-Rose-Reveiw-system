@@ -1,59 +1,262 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🌿 Desert Rose Herbal Bazaar - Review System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A modern, Shopify-inspired review system for Desert Rose Herbal Bazaar in Hurghada, Egypt. Built with Laravel 12, Docker, and featuring a comprehensive herbs catalog, customer reviews, and admin panel.
 
-## About Laravel
+## ✨ Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 🏠 Frontend
+- **Modern UI/UX**: Shopify-inspired design with Tailwind CSS
+- **Hero Section**: Beautiful hero with statistics and CTAs
+- **Gallery Carousel**: 5-slide image gallery
+- **Testimonials**: Dynamic customer review carousel
+- **Review Form**: Star rating system with validation
+- **Herbs Catalog**: 13+ herbs with detailed descriptions
+- **Contact Page**: Full contact form with business info
+- **Reviews List**: Paginated reviews with filters
+- **Multi-language**: English and Arabic support
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 🔧 Backend
+- **Admin Panel**: Complete review management system
+- **Email Notifications**: Review approval/rejection emails
+- **Contact Forms**: Email notifications for inquiries
+- **Database**: MySQL with migrations
+- **Cache**: Redis for performance
+- **Queue**: Background job processing
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 🐳 Docker
+- **Fully Containerized**: All services in Docker
+- **MySQL 8.4**: Database service
+- **Redis**: Cache and queue
+- **Mailpit**: Email testing
+- **Laravel Sail**: Development environment
 
-## Learning Laravel
+## 🚀 Quick Start
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### Prerequisites
+- Docker Desktop installed and running
+- Git
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Step 1: Start Docker Desktop
+Make sure Docker Desktop is running on your system.
 
-## Laravel Sponsors
+### Step 2: Start Containers
+```bash
+docker compose up -d
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Step 3: Run Migrations
+```bash
+docker compose exec laravel.test php artisan migrate
+```
 
-### Premium Partners
+### Step 4: Seed Herbs Data
+```bash
+docker compose exec laravel.test php artisan db:seed --class=HerbSeeder
+```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Step 5: Build Frontend Assets
+```bash
+docker compose exec laravel.test npm run build
+```
 
-## Contributing
+### Step 6: Access the Application
+- **Main Site**: http://localhost
+- **Admin Panel**: http://localhost/admin/reviews
+- **Mailpit**: http://localhost:8025
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📁 Project Structure
 
-## Code of Conduct
+```
+Desert-Rose-Review-system/
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── AdminController.php      # Review management
+│   │   ├── ContactController.php    # Contact form
+│   │   ├── HerbController.php       # Herbs catalog
+│   │   └── ReviewController.php     # Reviews system
+│   ├── Mail/
+│   │   ├── ContactFormSubmitted.php
+│   │   ├── ReviewApproved.php
+│   │   └── ReviewRejected.php
+│   └── Models/
+│       ├── Herb.php                 # Herb model
+│       └── Review.php               # Review model
+├── database/
+│   ├── migrations/
+│   │   ├── create_reviews_table.php
+│   │   └── create_herbs_table.php
+│   └── seeders/
+│       └── HerbSeeder.php           # 13 pre-populated herbs
+├── public/
+│   └── images/
+│       ├── desert-rose-logo.png
+│       ├── hero/                    # 5 hero images
+│       └── herbs/                   # Herb images (add yours)
+├── resources/views/
+│   ├── admin/
+│   │   └── reviews.blade.php        # Admin panel
+│   ├── components/
+│   │   ├── gallery.blade.php
+│   │   ├── hero.blade.php
+│   │   ├── review-form.blade.php
+│   │   └── testimonials.blade.php
+│   ├── contact/
+│   │   └── index.blade.php
+│   ├── emails/
+│   │   ├── contact-submitted.blade.php
+│   │   ├── review-approved.blade.php
+│   │   └── review-rejected.blade.php
+│   ├── herbs/
+│   │   ├── index.blade.php          # Herbs catalog
+│   │   └── show.blade.php           # Herb details
+│   ├── layouts/
+│   │   ├── admin.blade.php
+│   │   └── app.blade.php
+│   ├── partials/
+│   │   └── navbar.blade.php
+│   ├── reviews/
+│   │   └── list.blade.php           # All reviews
+│   └── home.blade.php
+├── compose.yaml                     # Docker Compose
+└── .env                            # Environment variables
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🌿 Herbs Catalog
 
-## Security Vulnerabilities
+The system includes 13 pre-populated herbs:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+1. **Black Seed (Nigella Sativa)** - حبة البركة
+2. **Hibiscus (Karkade)** - الكركديه
+3. **Chamomile** - البابونج
+4. **Anise** - الينسون
+5. **Cumin** - الكمون
+6. **Fennel** - الشمر
+7. **Ginger** - الزنجبيل
+8. **Turmeric** - الكركم
+9. **Saffron** - الزعفران
+10. **Mint** - النعناع
+11. **Cardamom** - الهيل
+12. **Frankincense Oil** - زيت اللبان
+13. **Black Seed Oil** - زيت حبة البركة
 
-## License
+Each herb includes:
+- Name in English and Arabic
+- Detailed description
+- Health benefits
+- Usage instructions
+- Category (herbs, spices, oils)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 🎨 Adding Herb Images
+
+To add images for the herbs catalog:
+
+1. Create folder: `public/images/herbs/`
+2. Add images with these names:
+   - black-seed.jpg
+   - hibiscus.jpg
+   - chamomile.jpg
+   - anise.jpg
+   - cumin.jpg
+   - fennel.jpg
+   - ginger.jpg
+   - turmeric.jpg
+   - saffron.jpg
+   - mint.jpg
+   - cardamom.jpg
+   - frankincense-oil.jpg
+   - black-seed-oil.jpg
+
+**Recommended**: White background, 500x500px or larger, high quality
+
+## 🔧 Common Commands
+
+### Docker
+```bash
+# Start containers
+docker compose up -d
+
+# Stop containers
+docker compose down
+
+# View logs
+docker compose logs -f laravel.test
+
+# Restart containers
+docker compose restart
+```
+
+### Laravel
+```bash
+# Run migrations
+docker compose exec laravel.test php artisan migrate
+
+# Seed database
+docker compose exec laravel.test php artisan db:seed
+
+# Clear cache
+docker compose exec laravel.test php artisan cache:clear
+```
+
+### NPM
+```bash
+# Install dependencies
+docker compose exec laravel.test npm install
+
+# Build for production
+docker compose exec laravel.test npm run build
+
+# Watch for changes
+docker compose exec laravel.test npm run dev
+```
+
+## 📊 Admin Panel
+
+Access at: http://localhost/admin/reviews
+
+**Features:**
+- View all reviews (pending, approved, featured)
+- Approve/reject reviews with email notifications
+- Feature/unfeature reviews
+- Bulk actions (approve, reject, delete)
+- Search and filter
+- Statistics dashboard
+
+## 📧 Email Notifications
+
+The system sends emails for:
+- ✅ Review approval
+- ❌ Review rejection
+- 📬 Contact form submissions
+
+**Note**: Uses Mailpit for testing at http://localhost:8025
+
+## 🌐 Multi-Language Support
+
+Currently supports:
+- English (en)
+- Arabic (ar)
+
+All herb descriptions, navigation, and forms are bilingual.
+
+## 🔒 Security Notes
+
+**For Production:**
+1. Change default passwords in `.env`
+2. Generate new `APP_KEY`
+3. Set `APP_DEBUG=false`
+4. Use real email service
+5. Add authentication for admin panel
+
+## 📝 License
+
+This project is proprietary software for Desert Rose Herbal Bazaar.
+
+## 📞 Support
+
+For detailed deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)
+
+---
+
+**Version**: 1.0.0  
+**Last Updated**: May 2026  
+**Built with**: Laravel 12, PHP 8.5, MySQL 8.4, Docker, Tailwind CSS
