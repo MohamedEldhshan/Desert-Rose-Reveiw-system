@@ -2,12 +2,5 @@
   "$schema": "https://schema.railpack.com",
   "php": {
     "version": "8.2"
-  },
-  "build": [
-    "composer install --no-dev",
-    "php artisan config:cache",
-    "php artisan route:cache",
-    "php artisan view:cache",
-    "php artisan migrate --force"
-  ]
+  }
 }
