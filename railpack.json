@@ -1,11 +1,11 @@
 {
   "$schema": "https://schema.railpack.com",
   "php": {
-    "version": "8.2",
+    "version": "8.4",
     "extensions": [
       "ctype", "curl", "dom", "fileinfo", "filter", "hash", 
-      "mbstring", "openssl", "pcre", "pdo", "session", 
-      "tokenizer", "xml", "pdo_mysql" 
+      "mbstring", "openssl", "pcre", "pdo", "pdo_mysql", "session", 
+      "tokenizer", "xml", "zip", "bcmath"
     ]
   }
 }
