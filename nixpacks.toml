@@ -1,24 +1,21 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "nodejs_20", "yarn"]
+nixPkgs = ["php84", "php84Packages.composer", "nodejs_20", "yarn"]
 
 [phases.build]
 cmds = [
   "composer install --no-dev --optimize-autoloader",
   "npm install",
-  "npm run build",
-  "php artisan key:generate",
-  "php artisan migrate --force"
+  "npm run build"
 ]
 
 [phases.start]
-cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
+cmd = "php -d memory_limit=-1 -S 0.0.0.0:${PORT:-8000} -t public/"
 
 [variables]
 APP_ENV = "production"
 APP_DEBUG = "false"
-APP_KEY = "{{ env.APP_KEY }}"
 CACHE_DRIVER = "file"
-SESSION_DRIVER = "file"
+SESSION_DRIVER = "cookie"
 QUEUE_CONNECTION = "sync"
 
 [static]
