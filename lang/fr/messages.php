@@ -1,7 +1,6 @@
 <?php
 return [
   'nav_home' => 'Home',
-  'nav_herbs' => 'Herbs',
   'nav_reviews' => 'Reviews',
   'nav_contact' => 'Contact',
   'testimonials' => 'Testimonials',

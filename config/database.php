@@ -31,7 +31,7 @@ return [
         'mysql' => [
             'driver' => 'mysql',
             // Parse DATABASE_URL from Railway if provided (takes priority)
-            'url' => env('DATABASE_URL'),
+            'url' => env('DATABASE_URL') ?: null,
             'host' => env('DB_HOST', '127.0.0.1'),
             'port' => env('DB_PORT', '3306'),
             'database' => env('DB_DATABASE', 'laravel'),

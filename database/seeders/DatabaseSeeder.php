@@ -15,8 +15,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            HerbSeeder::class,
-        ]);
+        // No seeders needed for review system only
     }
 }
