@@ -5,7 +5,6 @@ use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LocaleController;
-use App\Http\Controllers\HerbController;
 
 Route::get('/', [ReviewController::class, 'index'])->name('home');
 Route::post('/reviews', [ReviewController::class, 'store'])->name('reviews.store')->middleware('throttle:reviews');
@@ -16,9 +15,6 @@ Route::delete('/reviews/{review}', [ReviewController::class, 'destroy'])->name('
 Route::get('/reviews', fn () => redirect('/#reviews-list'))->name('reviews.index');
 
 Route::get('/contact', [ContactController::class, 'index'])->name('contact.index');
-
-Route::get('/herbs', [HerbController::class, 'index'])->name('herbs.index');
-Route::get('/herbs/{slug}', [HerbController::class, 'show'])->name('herbs.show');
 
 Route::get('/lang/{locale}', [LocaleController::class, 'switch'])->name('language.switch');
 
