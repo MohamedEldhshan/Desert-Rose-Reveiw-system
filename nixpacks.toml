@@ -1,15 +1,17 @@
 [phases.setup]
-nixPkgs = ["php84", "php84Packages.composer", "nodejs_20", "yarn"]
+nixPkgs = ["php82", "php82Packages.composer", "nodejs_20", "yarn"]
 
 [phases.build]
 cmds = [
   "composer install --no-dev --optimize-autoloader",
   "npm install",
-  "npm run build"
+  "npm run build",
+  "php artisan key:generate --force",
+  "php artisan migrate --force"
 ]
 
 [phases.start]
-cmd = "php -d memory_limit=-1 -S 0.0.0.0:${PORT:-3306} -t public/"
+cmd = "php -d memory_limit=-1 -S 0.0.0.0:${PORT:-8000} -t public/"
 
 [variables]
 APP_ENV = "production"

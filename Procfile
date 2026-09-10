@@ -1,1 +1,1 @@
-web: php -d memory_limit=-1 -S 0.0.0.0:${PORT:-3306} -t public/
+web: php -d memory_limit=-1 -S 0.0.0.0:${PORT:-8000} -t public/
