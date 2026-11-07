@@ -34,7 +34,7 @@
     </div>
 
     <div class="relative z-10 section-inner w-full py-20 text-center text-white">
-        <img src="{{ asset('images/desert-rose-logo.png') }}"
+        <img src="{{ asset('images/desert-rose-logo.webp') }}"
              alt=""
              class="h-20 w-20 sm:h-24 sm:w-24 mx-auto object-contain drop-shadow-lg ring-2 ring-brand-gold/40 rounded-full bg-white/10 p-1">
         <h1 class="mt-6 font-display text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight">{{ __('messages.hero_title') }}</h1>

@@ -9,7 +9,7 @@
     <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex items-center justify-between h-18 min-h-[72px] gap-4">
             <a href="{{ route('home') }}" class="flex items-center gap-3 shrink-0">
-                <img src="{{ asset('images/desert-rose-logo.png') }}" alt="{{ config('desert_rose.brand.name') }}" class="h-11 w-11 object-contain">
+                <img src="{{ asset('images/desert-rose-logo.webp') }}" alt="{{ config('desert_rose.brand.name') }}" class="h-11 w-11 object-contain">
                 <span class="font-display text-lg sm:text-xl font-bold text-brand-overlay leading-tight">{{ config('desert_rose.brand.name') }}</span>
             </a>
 

@@ -8,7 +8,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
             <div>
                 <div class="flex items-center gap-3">
-                    <img src="{{ asset('images/desert-rose-logo.png') }}" alt="" class="h-12 w-12 object-contain brightness-110">
+                    <img src="{{ asset('images/desert-rose-logo.webp') }}" alt="" class="h-12 w-12 object-contain brightness-110">
                     <span class="font-display text-xl font-bold">{{ config('desert_rose.brand.name') }}</span>
                 </div>
                 <p class="mt-3 text-sm text-brand-beige/90 leading-relaxed">{{ __('messages.footer_tagline') }}</p>

@@ -8,4 +8,14 @@ export default defineConfig({
       refresh: true,
     }),
   ],
+  build: {
+    cssCodeSplit: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['alpinejs'],
+        },
+      },
+    },
+  },
 })

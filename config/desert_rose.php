@@ -21,9 +21,9 @@ return [
     ],
 
     'hero_slides' => [
-        ['image' => 'images/carousel/saffron.jpg', 'alt' => 'Desert Rose Gifts — spices and herbs'],
-        ['image' => 'images/carousel/chamomile.jpg', 'alt' => 'Desert Rose Gifts — traditional bazaar'],
-        ['image' => 'images/carousel/mint.jpg', 'alt' => 'Desert Rose Gifts — Hurghada'],
+        ['image' => 'images/carousel/saffron.webp', 'alt' => 'Desert Rose Gifts — spices and herbs'],
+        ['image' => 'images/carousel/chamomile.webp', 'alt' => 'Desert Rose Gifts — traditional bazaar'],
+        ['image' => 'images/carousel/mint.webp', 'alt' => 'Desert Rose Gifts — Hurghada'],
     ],
 
     'locales' => [
