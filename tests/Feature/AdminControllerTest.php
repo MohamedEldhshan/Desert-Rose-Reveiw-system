@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Review;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ReviewApproved;
@@ -12,6 +13,14 @@ use Tests\TestCase;
 class AdminControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $admin = User::factory()->admin()->create();
+        $this->actingAs($admin);
+    }
 
     // =====================
     // index() - Dashboard

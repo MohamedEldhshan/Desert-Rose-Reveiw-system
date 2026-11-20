@@ -109,7 +109,7 @@ class ReviewController extends Controller
                 'phone' => preg_replace('/[^\d\+\-\s\(\)]/', '', $validated['phone']),
                 'nationality' => strip_tags($validated['nationality']),
                 'rating' => (int) $validated['rating'],
-                'comment' => strip_tags($validated['comment'], '<p><br><strong><em><ul><ol><li>'),
+                'comment' => strip_tags($validated['comment']),
                 'is_approved' => false,
                 'is_featured' => false,
             ]);
@@ -172,21 +172,27 @@ class ReviewController extends Controller
         }
 
         $validated = $request->validate([
-            'name' => 'required|string|max:100',
-            'phone' => 'required|string|max:20',
+            'name' => 'required|string|max:100|regex:/^[\p{L}\s\-\'\.]+$/u',
+            'phone' => 'required|string|max:20|regex:/^[\d\+\-\s\(\)]+$/',
             'email' => 'nullable|email|max:150',
-            'nationality' => 'required|string|max:50',
+            'nationality' => 'required|string|max:50|regex:/^[\p{L}\s\-]+$/u',
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|min:10|max:1000',
+            'comment' => ['required', 'string', 'min:10', 'max:1000', new SanitizeHtml],
+        ], [
+            'name.regex' => 'Name contains invalid characters.',
+            'phone.regex' => 'Phone number contains invalid characters.',
+            'nationality.regex' => 'Nationality contains invalid characters.',
         ]);
 
         $review->update([
-            'name' => $validated['name'],
-            'email' => $validated['email'] ?? null,
-            'phone' => $validated['phone'],
-            'nationality' => $validated['nationality'],
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'],
+            'name' => strip_tags($validated['name']),
+            'email' => filled($validated['email'] ?? null)
+                ? filter_var($validated['email'], FILTER_SANITIZE_EMAIL)
+                : null,
+            'phone' => preg_replace('/[^\d\+\-\s\(\)]/', '', $validated['phone']),
+            'nationality' => strip_tags($validated['nationality']),
+            'rating' => (int) $validated['rating'],
+            'comment' => strip_tags($validated['comment']),
         ]);
 
         return redirect()->to(route('home') . '#reviews-list')->with('success', __('messages.review_updated'));

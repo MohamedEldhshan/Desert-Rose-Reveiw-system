@@ -3,11 +3,9 @@ nixPkgs = ["php82", "php82Packages.composer", "nodejs_20", "yarn"]
 
 [phases.build]
 cmds = [
-  "composer install --no-dev --optimize-autoloader",
-  "npm install",
-  "npm run build",
-  "php artisan key:generate --force",
-  "php artisan migrate --force"
+  "composer install --no-dev --optimize-autoloader --no-interaction",
+  "npm ci",
+  "npm run build"
 ]
 
 [phases.start]
@@ -16,9 +14,14 @@ cmd = "php -d memory_limit=-1 -S 0.0.0.0:${PORT:-8000} -t public/"
 [variables]
 APP_ENV = "production"
 APP_DEBUG = "false"
-CACHE_DRIVER = "file"
+CACHE_STORE = "file"
 SESSION_DRIVER = "cookie"
+SESSION_SECURE_COOKIE = "true"
 QUEUE_CONNECTION = "sync"
+BROADCAST_CONNECTION = "log"
+LOG_CHANNEL = "stderr"
+LOG_LEVEL = "info"
+FILESYSTEM_DISK = "local"
 
 [static]
 # Serve public directory

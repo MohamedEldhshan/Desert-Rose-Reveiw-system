@@ -76,4 +76,13 @@ return [
     'footer_rights' => 'All rights reserved.',
 
     'language' => 'Language',
+
+    'admin_login_title' => 'Admin Login',
+    'admin_login_subtitle' => 'Sign in to manage reviews',
+    'login_email' => 'Email',
+    'password' => 'Password',
+    'remember_me' => 'Remember me',
+    'login' => 'Sign in',
+    'logout' => 'Sign out',
+    'login_failed' => 'These credentials do not match our records.',
 ];

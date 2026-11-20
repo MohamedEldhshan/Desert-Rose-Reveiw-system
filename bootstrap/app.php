@@ -6,6 +6,7 @@ use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\SetLocale;
 use App\Http\Middleware\HandleRateLimitExceeded;
 use App\Http\Middleware\LimitRequestSize;
+use App\Http\Middleware\EnsureUserIsAdmin;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,7 +18,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', SetLocale::class);
         $middleware->append(HandleRateLimitExceeded::class);
         $middleware->append(LimitRequestSize::class);
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+        ]);
+        $middleware->redirectGuestsTo(fn () => route('login'));
     })
+    ->withCommands([
+        __DIR__.'/../app/Console/Commands',
+    ])
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

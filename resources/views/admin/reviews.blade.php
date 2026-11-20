@@ -12,12 +12,23 @@
                     <h1 class="text-3xl font-bold text-gray-900">Review Management</h1>
                     <p class="mt-1 text-sm text-gray-600">Manage and moderate customer reviews</p>
                 </div>
-                <a href="/" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    Back to Site
-                </a>
+                <div class="flex items-center gap-3">
+                    <a href="/" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Back to Site
+                    </a>
+                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                            </svg>
+                            Sign out
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -157,8 +168,6 @@
             @if($reviews->count() > 0)
             <form id="bulk-form" method="POST" action="{{ route('admin.bulk-approve') }}">
                 @csrf
-                <input type="hidden" name="ids" id="selected-ids">
-                <input type="hidden" name="action" id="bulk-action">
 
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200">
@@ -179,7 +188,7 @@
                             @foreach($reviews as $review)
                             <tr class="hover:bg-gray-50">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <input type="checkbox" class="review-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" value="{{ $review->id }}">
+                                    <input type="checkbox" name="ids[]" class="review-checkbox w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" value="{{ $review->id }}">
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
@@ -340,9 +349,6 @@
             alert('Please select at least one review');
             return;
         }
-
-        document.getElementById('selected-ids').value = JSON.stringify(selectedIds);
-        document.getElementById('bulk-action').value = action;
 
         let actionUrl = '{{ route('admin.bulk-approve') }}';
         let confirmMessage = '';

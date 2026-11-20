@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ReviewController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\LocaleController;
 
@@ -18,7 +19,11 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact.index
 
 Route::get('/lang/{locale}', [LocaleController::class, 'switch'])->name('language.switch');
 
-Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [AuthController::class, 'login'])->name('login.submit')->middleware('throttle:6,1');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     Route::get('/reviews', [AdminController::class, 'index'])->name('reviews');
     Route::post('/reviews/{id}/approve', [AdminController::class, 'approve'])->name('approve');
     Route::post('/reviews/{id}/reject', [AdminController::class, 'reject'])->name('reject');

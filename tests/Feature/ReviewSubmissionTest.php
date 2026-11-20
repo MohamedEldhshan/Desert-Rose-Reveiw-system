@@ -161,7 +161,7 @@ class ReviewSubmissionTest extends TestCase
         $this->assertDatabaseCount('reviews', 0);
     }
 
-    public function test_sql_injection_attempt_is_sanitized()
+    public function test_sql_injection_in_name_is_rejected_by_validation()
     {
         $response = $this->post(route('reviews.store'), [
             'name' => "John'; DROP TABLE reviews; --",
@@ -172,13 +172,28 @@ class ReviewSubmissionTest extends TestCase
             '_idempotency_key' => (string) \Illuminate\Support\Str::uuid(),
         ]);
 
-        // Should still work due to parameterized queries
+        $response->assertSessionHasErrors('name');
+        $this->assertDatabaseCount('reviews', 0);
+    }
+
+    public function test_sql_injection_in_comment_is_safely_stored()
+    {
+        $response = $this->post(route('reviews.store'), [
+            'name' => 'John Doe',
+            'phone' => '+1234567890',
+            'nationality' => 'American',
+            'rating' => 5,
+            'comment' => "Great product!'; DROP TABLE reviews; --",
+            '_idempotency_key' => (string) \Illuminate\Support\Str::uuid(),
+        ]);
+
+        // Parameterized queries prevent execution; comment is stored as plain text
         $response->assertRedirect(route('home') . '#write-review');
         $this->assertDatabaseHas('reviews', [
-            'name' => "John'; DROP TABLE reviews; --",
+            'name' => 'John Doe',
         ]);
-        
-        // Verify table still exists
+
+        // Verify table still exists and only one review was created
         $this->assertDatabaseCount('reviews', 1);
     }
 

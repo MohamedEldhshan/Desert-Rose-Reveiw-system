@@ -10,12 +10,5 @@ export default defineConfig({
   ],
   build: {
     cssCodeSplit: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['alpinejs'],
-        },
-      },
-    },
   },
 })

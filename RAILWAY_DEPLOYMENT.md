@@ -1,238 +1,157 @@
-# 🚀 Railway.app Deployment Guide
+# Railway Deployment Guide
 
-## Prerequisites
+This guide explains how to deploy the Desert Rose Review System to Railway.
 
-- Railway account and project created
-- MySQL database provisioned in Railway
-- Environment variables configured in Railway dashboard
+## Architecture
 
----
+- **Framework:** Laravel 12 (PHP 8.2)
+- **Database:** MySQL (Railway MySQL service)
+- **Cache/Session:** `file` / `cookie` (no Redis required)
+- **Queue:** `sync` (no queue worker required)
+- **Mail:** `log` by default; configure SMTP for real delivery
+- **Frontend:** Vite + Tailwind CSS (built during deploy)
 
-## Configuration Checklist ✅
+## Files that control the deploy
 
-### 1️⃣ Railway Environment Variables
+| File | Purpose |
+|------|---------|
+| `nixpacks.toml` | Nixpacks build/start config (PHP 8.2, composer, npm, Vite build) |
+| `railpack.json` | Railpack fallback config (PHP 8.2, `pdo_mysql`) |
+| `Procfile` | Web process: `php -S 0.0.0.0:${PORT:-8000} -t public/` |
+| `composer.json` / `composer.lock` | PHP dependencies (lockfile-driven install) |
+| `package.json` / `package-lock.json` | Frontend dependencies (lockfile-driven install) |
 
-Set these in your **Railway project dashboard** → **Variables**:
+> **Note:** The build phase runs `composer install`, `npm ci`, and `npm run build`.
+> It does **not** generate `APP_KEY` or run migrations. Those are manual steps (see below).
+
+## Railway dashboard setup
+
+### 1. Create the project
+
+1. Create a new Railway project.
+2. Add a **MySQL** service.
+3. Add your **application** service and connect it to the same project.
+
+### 2. Set environment variables
+
+In the application service → **Variables**, set:
 
 ```env
-# App Configuration
-APP_NAME="Desert Rose"
+APP_NAME="Desert Rose Gifts"
 APP_ENV=production
 APP_DEBUG=false
-APP_URL=https://your-domain.railway.app
-APP_KEY=base64:YOUR_APP_KEY_HERE
+APP_URL=https://your-app.railway.app
+APP_KEY=base64:GENERATE_A_REAL_KEY
 
-# Database (Railway provides DATABASE_URL automatically)
-# Option A: Use Railway's DATABASE_URL (RECOMMENDED)
+DB_CONNECTION=mysql
 DATABASE_URL=mysql://user:password@host.railway.app:3306/railway
 
-# Option B: Or set individual variables
-DB_CONNECTION=mysql
-DB_HOST=your-mysql-host.railway.app
-DB_PORT=3306
-DB_DATABASE=railway
-DB_USERNAME=root
-DB_PASSWORD=your-password
-
-# Cache & Queue
-CACHE_DRIVER=redis
-QUEUE_CONNECTION=redis
-REDIS_URL=redis://default:password@your-redis-host.railway.app:6379
-
-# Mail (use SendGrid, Mailgun for production)
-MAIL_MAILER=sendgrid
-SENDGRID_API_KEY=your-sendgrid-api-key
-MAIL_FROM_ADDRESS=noreply@yourdomain.com
-MAIL_FROM_NAME="Desert Rose"
-
-# Session & Logging
+CACHE_STORE=file
 SESSION_DRIVER=cookie
-LOG_CHANNEL=stack
+SESSION_SECURE_COOKIE=true
+QUEUE_CONNECTION=sync
+BROADCAST_CONNECTION=log
+LOG_CHANNEL=stderr
+LOG_LEVEL=info
+FILESYSTEM_DISK=local
+
+MAIL_MAILER=log
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="Desert Rose Gifts"
 ```
 
-### 2️⃣ Files Changed for Railway
+**Important:**
+- `APP_KEY` must be a real key. Generate one locally with `php artisan key:generate --show` and paste the output.
+- `DATABASE_URL` is provided automatically by Railway when you add a MySQL service. You can reference it directly or copy the value.
+- Do **not** set `APP_DEBUG=true` in production.
 
-| File | What Changed | Why |
-|------|-------------|-----|
-| **railpack.json** | PHP 8.2 → **8.4**, added `pdo_mysql`, `zip`, `bcmath` | MySQL support + compatibility |
-| **config/database.php** | Added `DATABASE_URL` priority, timeout settings | Parse Railway's DB connection string |
-| **Procfile** | `artisan serve` → **PHP built-in server** + migrations | Better for production, runs migrations on deploy |
-| **nixpacks.toml** | PHP 8.2 → **8.4**, optimized build + start phases | Aligns with railpack.json |
+### 3. Deploy
 
-### 3️⃣ Database Setup
+Push to the connected Git branch (or trigger a redeploy). Railway will:
 
-Railway creates `DATABASE_URL` automatically when MySQL is provisioned.
+1. Install PHP 8.2 + Composer + Node 20.
+2. Run `composer install --no-dev --optimize-autoloader --no-interaction`.
+3. Run `npm ci`.
+4. Run `npm run build` (produces `public/build/manifest.json`).
+5. Start the web server with `php -S 0.0.0.0:${PORT:-8000} -t public/`.
 
-**Verify connection in Railway shell:**
+## Post-deploy steps (manual)
 
-```bash
-railway connect
-php artisan tinker
->>> DB::connection()->getPdo()
-```
+The build does **not** run migrations or create the admin user. Run these once after the first deploy:
 
-If you see connection info → ✅ Database is working
+### Run migrations
 
-### 4️⃣ First Deploy
-
-```bash
-# Ensure all files are committed
-git add .
-git commit -m "Railway deployment configuration"
-git push origin main
-```
-
-Railway will **automatically**:
-1. ✅ Detect PHP 8.4 from railpack.json
-2. ✅ Install `pdo_mysql` extension
-3. ✅ Run `composer install --no-dev --optimize-autoloader`
-4. ✅ Build frontend assets (`npm run build`)
-5. ✅ Run migrations via Procfile release phase
-6. ✅ Clear config cache
-7. ✅ Start the web server
-
----
-
-## Troubleshooting 🔧
-
-### ❌ 502 Bad Gateway
-
-**Step 1: Check logs**
-```bash
-railway logs -f
-```
-
-**Step 2: Common causes & fixes**
-
-| Error | Cause | Fix |
-|-------|-------|-----|
-| `SQLSTATE[HY000]: General error: 2006 MySQL server has gone away` | DATABASE_URL not set | Set `DATABASE_URL` in Railway Variables |
-| `Call to undefined function pdo_mysql` | Missing extension | Ensure `pdo_mysql` is in railpack.json |
-| `SQLSTATE[HY000] [2002] Connection refused` | Connecting to localhost instead of Railway host | DATABASE_URL must use Railway MySQL host |
-| `SQLSTATE[HY000] [2002] No such file or directory` | SQLite fallback (not MySQL) | Set `DB_CONNECTION=mysql` or use `DATABASE_URL` |
-
-### ❌ Connection to localhost refused
-
-**Root cause:** Config is falling back to `127.0.0.1`
-
-**Fix:**
-1. Railway Dashboard → Select your project
-2. Go to **Variables** tab
-3. Add/verify `DATABASE_URL`:
-   ```
-   DATABASE_URL=mysql://root:password@mysql.railway.internal:3306/railway
-   ```
-4. Trigger redeploy: `git commit --allow-empty -m "redeploy" && git push`
-
-### ❌ pdo_mysql extension not found
-
-**Fix:** Update railpack.json
-
-```json
-{
-  "php": {
-    "version": "8.4",
-    "extensions": ["pdo_mysql", "ctype", "curl", ... ]
-  }
-}
-```
-
-Then push to trigger rebuild.
-
-### ❌ Migrations not running
-
-**Check:**
-1. Procfile has `release:` phase
-2. DATABASE_URL is correct
-3. Check logs: `railway logs --tail=50`
-
-**Manual fix:**
 ```bash
 railway run "php artisan migrate --force"
 ```
 
-### ❌ APP_KEY not set / APP_KEY is invalid
+### Create the admin user
 
-**Fix:**
 ```bash
-# Locally
-php artisan key:generate --show
-# Output: base64:XXXXX...
+railway run "php artisan admin:create admin@example.com --name=Admin"
 ```
 
-Set this in Railway Variables as `APP_KEY`.
+This prints a generated password once. Store it securely.
 
----
+### Verify
 
-## Deployment Checklist 📋
+- Homepage: `https://your-app.railway.app`
+- Health check: `https://your-app.railway.app/up`
+- Admin login: `https://your-app.railway.app/login`
+- Admin panel: `https://your-app.railway.app/admin/reviews`
 
-Before pushing to production:
+## Troubleshooting
 
-- [ ] `DATABASE_URL` set in Railway Variables
-- [ ] `APP_KEY` generated and set (base64 encoded)
+### 502 Bad Gateway / app not starting
+
+Check logs:
+
+```bash
+railway logs -f
+```
+
+Common causes:
+- `APP_KEY` missing or invalid → set a real `APP_KEY`.
+- `DATABASE_URL` not set → add the MySQL service and reference its URL.
+- `public/build/manifest.json` missing → the Vite build failed; check `npm run build` logs.
+
+### Database connection errors
+
+- Ensure `DB_CONNECTION=mysql` (lowercase).
+- Ensure `DATABASE_URL` uses the Railway MySQL host, not `localhost`.
+- Run `railway run "php artisan migrate --force"` after setting the DB vars.
+
+### Admin login fails
+
+- Confirm the admin user exists: `railway run "php artisan admin:create ..."`.
+- Confirm `is_admin` is `true` in the `users` table.
+- Confirm `APP_KEY` is set (sessions/encryption depend on it).
+
+### Mail not sending
+
+- Default `MAIL_MAILER=log` writes emails to the log (safe for testing).
+- For real delivery, set `MAIL_MAILER=smtp` and the SMTP vars (`MAIL_HOST`, `MAIL_PORT`, `MAIL_SCHEME=tls`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS`).
+
+## Security checklist
+
 - [ ] `APP_DEBUG=false`
 - [ ] `APP_ENV=production`
-- [ ] `MAIL_MAILER` configured (not mail.log)
-- [ ] `CACHE_DRIVER=redis` or `file` if no Redis
-- [ ] All `.env` secrets are in Railway, NOT in repo
-- [ ] `railpack.json` has PHP 8.4 + `pdo_mysql`
-- [ ] `Procfile` has release phase with migrations
-- [ ] Run locally: `php artisan migrate` (to test DB config)
+- [ ] `APP_KEY` is a real, unique key (not the dev key)
+- [ ] `SESSION_SECURE_COOKIE=true` (HTTPS)
+- [ ] `DATABASE_URL` uses Railway MySQL credentials
+- [ ] Admin user created via `php artisan admin:create`
+- [ ] No secrets committed to the repo (`.env` is gitignored)
+- [ ] Migrations run manually after deploy
 
----
-
-## Quick Commands 🚀
+## Local development
 
 ```bash
-# View live logs
-railway logs -f
-
-# SSH into Railway container
-railway connect
-
-# Run artisan command on Railway
-railway run "php artisan migrate --force"
-
-# Check environment variables
-railway run "printenv | grep DATABASE_URL"
-
-# Clear cache on Railway
-railway run "php artisan config:clear && php artisan cache:clear"
-
-# Rollback migrations if needed
-railway run "php artisan migrate:rollback"
+composer install
+npm ci
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan admin:create admin@example.com --name=Admin
+npm run dev   # or npm run build
+php artisan serve
 ```
-
----
-
-## Post-Deployment 🎉
-
-Once deployed:
-
-1. **Test the site:**
-   ```
-   https://your-app.railway.app
-   ```
-
-2. **Check admin panel:**
-   ```
-   https://your-app.railway.app/admin/reviews
-   ```
-
-3. **Verify database:**
-   ```bash
-   railway connect
-   php artisan tinker
-   >>> Review::count()
-   >>> Herb::count()
-   ```
-
----
-
-## Support & Reference
-
-- **Railway Docs:** https://docs.railway.app
-- **Laravel on Railway:** https://docs.railway.app/guides/laravel
-- **Railpack (PHP):** https://nixpacks.com/docs/languages/php
-- **Database URL Format:** `mysql://user:password@host:3306/database`
-
